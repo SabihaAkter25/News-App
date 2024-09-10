@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: implement initState
     super.initState();
     Timer(Duration(seconds: 3),(){
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen() ));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomeScreen() ));
     }
     );
   }
@@ -28,8 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.sizeOf(context);
-
-
     return Scaffold(
       body: Container(
         child: Column(
@@ -52,3 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
+
+//4f92a27b662a4da49d35bcf044549228
