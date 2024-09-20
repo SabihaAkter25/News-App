@@ -28,23 +28,22 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final media = MediaQuery.sizeOf(context);
     return Scaffold(
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset("images/splash_pic.jpg",
-              fit: BoxFit.cover,
-            height: media.height*0.5,),
-            const SizedBox(height:4 ,),
-             Text("TOP HEAD LINES",
-               style: GoogleFonts.anton(letterSpacing: .6,
-                   color: Colors.grey.shade700),),
-            SpinKitChasingDots(
-              color: Colors.blue,
-              size: 40,
-            )
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset("images/splash_pic.jpg",
+            fit: BoxFit.cover,
+          height: media.height*0.5,),
+          const SizedBox(height:4 ,),
+           Text("TOP HEAD LINES",
+             style: GoogleFonts.anton(letterSpacing: .6,
+                 color: Colors.grey.shade700),),
+          const SizedBox(height:20 ,),
+          const SpinKitChasingDots(
+            color: Colors.blue,
+            size: 40,
+          )
+        ],
       ),
     );
   }
