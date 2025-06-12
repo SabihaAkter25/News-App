@@ -37,9 +37,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     var height = MediaQuery.sizeOf(context).height * 1;
 
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: Colors.cyan.shade50,
       appBar: AppBar(
-        backgroundColor: Colors.blue.shade300,
+        backgroundColor: Colors.cyan.shade300,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -78,7 +78,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             }
               )
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Expanded(
               child: FutureBuilder<CategoriesNewsModel>(
                 future: newsViewModel.fetchCategoriesNewsApi( category: categoryName), // Use updated future
@@ -131,7 +131,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 ),
                               ),
 
-                              SizedBox(width: 7,),
+                              const SizedBox(width: 7,),
                               Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
@@ -148,7 +148,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                             ),
                                           ),
                                           Spacer(),
-                                          Row(
+                                          Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(snapshot.data!.articles![index].source!.name.toString(),
