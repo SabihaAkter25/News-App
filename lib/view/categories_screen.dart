@@ -7,6 +7,7 @@ import 'package:news_app225/model/categories_news_model.dart';
 
 import '../view_model/news_view_model.dart';
 import 'home_screen.dart';
+import 'news_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -37,155 +38,192 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     var height = MediaQuery.sizeOf(context).height * 1;
 
     return Scaffold(
-      backgroundColor: Colors.cyan.shade50,
+      backgroundColor: const Color(0xfff5f8fa),
       appBar: AppBar(
-        backgroundColor: Colors.cyan.shade300,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black87),
+        title: Text(
+          "Categories",
+          style: GoogleFonts.poppins(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
+            const SizedBox(height: 10),
             SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
                 itemCount: categoriesList.length,
-                  itemBuilder: (context,index){
+                itemBuilder: (context, index) {
+                  bool isSelected = categoryName == categoriesList[index];
                   return InkWell(
-                    onTap: (){
+                    onTap: () {
                       setState(() {
                         categoryName = categoriesList[index];
                       });
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color:categoryName== categoriesList[index] ? Colors.blue : Colors.grey,
-                          borderRadius: BorderRadius.circular(20),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blueAccent : Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: isSelected ? [
+                          BoxShadow(
+                            color: Colors.blueAccent.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ] : [],
+                        border: Border.all(
+                          color: isSelected ? Colors.blueAccent : Colors.grey.shade300,
                         ),
-                        child:Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Center(
-                              child: Text(
-                                  categoriesList[index].toString(),
-                              style: GoogleFonts.poppins(fontSize: 13,color: Colors.white),),
+                      ),
+                      child: Center(
+                        child: Text(
+                          categoriesList[index],
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                            color: isSelected ? Colors.white : Colors.black87,
                           ),
-                        ) ,
+                        ),
                       ),
                     ),
                   );
-            }
-              )
+                },
+              ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             Expanded(
               child: FutureBuilder<CategoriesNewsModel>(
-                future: newsViewModel.fetchCategoriesNewsApi( category: categoryName), // Use updated future
-                builder: (BuildContext context,
-                    AsyncSnapshot<CategoriesNewsModel> snapshot) {
+                future: newsViewModel.fetchCategoriesNewsApi(category: categoryName),
+                builder: (BuildContext context, AsyncSnapshot<CategoriesNewsModel> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child: SpinKitCircle(
-                        color: Colors.blue,
-                        size: 50,
-                      ),
+                      child: SpinKitFadingCircle(color: Colors.blueAccent, size: 50),
                     );
                   } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else if (snapshot.hasData &&
-                      snapshot.data!.articles!.isNotEmpty) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData && snapshot.data!.articles!.isNotEmpty) {
                     return ListView.builder(
-                      scrollDirection: Axis.vertical,
+                      physics: const BouncingScrollPhysics(),
                       itemCount: snapshot.data!.articles!.length,
                       itemBuilder: (context, index) {
-                        DateTime dateTime = DateTime.parse(snapshot.data!.articles![index].publishedAt.toString());
+                        var article = snapshot.data!.articles![index];
+                        DateTime dateTime = DateTime.parse(article.publishedAt.toString());
 
                         return Padding(
-                          padding:
-                          const EdgeInsets.only(bottom: 15.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: CachedNetworkImage(
-                                  imageUrl: snapshot.data!.articles![index]
-                                      .urlToImage ??
-                                      '',
-                                  fit: BoxFit.cover,
-                                  width: width*.3,
-                                  height: height*0.18,
-                                  placeholder: (context, url) =>
-                                      Container(
-                                        alignment: Alignment.center,
-                                        child: spinkit2,
-                                      ),
-                                  errorWidget: (context, url, error) =>
-                                  const Icon(
-                                    Icons.error_outline,
-                                    color: Colors.red,
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(
+                                newsImage: article.urlToImage.toString(),
+                                newsTitle: article.title.toString(),
+                                newsDate: article.publishedAt.toString(),
+                                author: article.author.toString(),
+                                description: article.description.toString(),
+                                content: article.description.toString(),
+                                source: article.source!.name.toString(),
+                              )));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.03),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
                                   ),
-                                ),
+                                ],
                               ),
-
-                              const SizedBox(width: 7,),
-                              Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Container(
-                                      height: height*.18,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
+                                    child: CachedNetworkImage(
+                                      imageUrl: article.urlToImage ?? '',
+                                      fit: BoxFit.cover,
+                                      width: width * 0.35,
+                                      height: height * 0.18,
+                                      placeholder: (context, url) => Container(color: Colors.grey[100]),
+                                      errorWidget: (context, url, error) => const Icon(Icons.error_outline),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
                                       child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(snapshot.data!.articles![index].title.toString(),
+                                          Text(
+                                            article.title.toString(),
                                             maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
                                             style: GoogleFonts.poppins(
-                                              fontSize: 15,
-                                              color: Colors.black54,
-                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
                                             ),
                                           ),
-                                          Spacer(),
-                                          Column(
+                                          const SizedBox(height: 10),
+                                          Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(snapshot.data!.articles![index].source!.name.toString(),
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  color: Colors.black54,
-                                                  fontWeight: FontWeight.w700,
+                                              Expanded(
+                                                child: Text(
+                                                  article.source!.name.toString(),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blueAccent,
+                                                  ),
                                                 ),
                                               ),
-
-                                              Text(format.format(dateTime),
+                                              Text(
+                                                format.format(dateTime),
                                                 style: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.grey,
                                                 ),
                                               ),
                                             ],
-                                          )
-
+                                          ),
                                         ],
                                       ),
                                     ),
-                                  ))
-                            ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       },
                     );
                   } else {
-                    return const Center(
-                      child: Text('No data available'),
-                    );
+                    return const Center(child: Text('No data available'));
                   }
                 },
               ),
-            ),],
+            ),
+          ],
         ),
       ),
     );
